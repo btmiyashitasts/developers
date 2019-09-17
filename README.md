@@ -2,6 +2,8 @@
 uPort Developer Portal
 ============
 
+[FAQ and helpdesk support](http://bit.ly/uPort_helpdesk)
+
 ## Deployed Markdown
 
 |Name|Branch|
