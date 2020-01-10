@@ -5,7 +5,6 @@ import cog from '../../../images/cog.svg'
 import tick from '../../../images/greenTick.svg'
 import imageBg from '../../../images/Products-BG.svg'
 import UnorderedList from '../../Layout/html/UnorderedList'
-import VerificationModal from './VerificationModal'
 import CopyButton from './CopyButton'
 import SendVerificationModal from '../../UportVerification'
 import { Container, Grid, Col, medium } from '../../../layouts/grid'
@@ -57,7 +56,6 @@ class AppRegComplete extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      verificationModal: false,
       sendVerificationModal: false,
       claim: null
     }
@@ -144,26 +142,6 @@ class AppRegComplete extends Component {
       sendVerificationModal: false
     })
   }
-  hideVerificationModal = () => {
-    this.track('App Configurator Verification Modal Closed', {
-      step: 'App Registration Complete',
-      value: {
-        name: this.props.appDetails.appName,
-        appURL: this.props.appDetails.appURL
-      }
-    })
-    this.setState({ verificationModal: false })
-  }
-  showVerificationModal = () => {
-    this.track('App Configurator Verification Modal Opened', {
-      step: 'App Registration Complete',
-      value: {
-        name: this.props.appDetails.appName,
-        appURL: this.props.appDetails.appURL
-      }
-    })
-    this.setState({ verificationModal: true })
-  }
   track = (name, properties={}) => {
     track(name, {
       source: 'App Configurator',
@@ -172,9 +150,9 @@ class AppRegComplete extends Component {
   }
   render () {
     const { appDetails, appEnvironment, signingKey, ipfsProfileHash } = this.props
-    const { verificationModal, sendVerificationModal, claim } = this.state;
+    const { sendVerificationModal, claim } = this.state;
     return (<div>
-      <Section className={verificationModal ? 'blurred' : ''}>
+      <Section>
         <Success>
           <Check src={tick} />
           <h2>Registration complete!</h2>
