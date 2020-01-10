@@ -5,7 +5,6 @@ import cog from '../../../images/cog.svg'
 import tick from '../../../images/greenTick.svg'
 import imageBg from '../../../images/Products-BG.svg'
 import UnorderedList from '../../Layout/html/UnorderedList'
-import VerificationModal from './VerificationModal'
 import CopyButton from './CopyButton'
 import SendVerificationModal from '../../UportVerification'
 import { Container, Grid, Col, medium } from '../../../layouts/grid'
@@ -53,33 +52,10 @@ const uport = new Connect('${appDetails.appName}', {
   .replace(/ +description: ""\n/g, '')
   .replace(/ +network: "none",\n/g, '')
 
-const didDoc = (appDetails) => {
-  const did = appDetails.appIdentity.did.replace('did:ethr:', '')
-  return `{
-  "@context": "https://w3id.org/did/v1",
-  "id": "did:https:${appDetails.appURL || ''}",
-  "publicKey": [{
-    "id": "did:https:${appDetails.appURL || ''}#owner",
-    "type": "Secp256k1VerificationKey2018",
-    "owner": "did:https:${appDetails.appURL || ''}",
-    "ethereumAddress": "${did}"
-  }],
-  "authentication": [{
-    "type": "Secp256k1SignatureAuthentication2018",
-    "publicKey": "did:https:${appDetails.appURL || ''}#owner"
-  }]
-}`
-  .replace(/ +"id": "did:https:",\n/g, '')
-  .replace(/ +"id": "did:https:#owner",\n/g, '')
-  .replace(/ +"owner": "did:https:",\n/g, '')
-  .replace(/ +"publicKey": "did:https:#owner"\n/g, '')
-}
-
 class AppRegComplete extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      verificationModal: false,
       sendVerificationModal: false,
       claim: null
     }
@@ -166,26 +142,6 @@ class AppRegComplete extends Component {
       sendVerificationModal: false
     })
   }
-  hideVerificationModal = () => {
-    this.track('App Configurator Verification Modal Closed', {
-      step: 'App Registration Complete',
-      value: {
-        name: this.props.appDetails.appName,
-        appURL: this.props.appDetails.appURL
-      }
-    })
-    this.setState({ verificationModal: false })
-  }
-  showVerificationModal = () => {
-    this.track('App Configurator Verification Modal Opened', {
-      step: 'App Registration Complete',
-      value: {
-        name: this.props.appDetails.appName,
-        appURL: this.props.appDetails.appURL
-      }
-    })
-    this.setState({ verificationModal: true })
-  }
   track = (name, properties={}) => {
     track(name, {
       source: 'App Configurator',
@@ -194,9 +150,9 @@ class AppRegComplete extends Component {
   }
   render () {
     const { appDetails, appEnvironment, signingKey, ipfsProfileHash } = this.props
-    const { verificationModal, sendVerificationModal, claim } = this.state;
+    const { sendVerificationModal, claim } = this.state;
     return (<div>
-      <Section className={verificationModal ? 'blurred' : ''}>
+      <Section>
         <Success>
           <Check src={tick} />
           <h2>Registration complete!</h2>
@@ -288,60 +244,9 @@ class AppRegComplete extends Component {
                 <CTALink to='/myapps/detail?tab=code'>View Full App Code</CTALink>
               </Card.Footer>
             </Card>
-            {appEnvironment.environment === 'server'
-              ? <Card>
-                {appDetails.appURL
-                  ? <Card.Content>
-                    <h4>Get uPort Verification Badge</h4>
-                    <p>Verify your URL domain in 2 easy steps</p>
-                    <Icon src={cog} />
-                    <UnorderedList>
-                      <li>Make your user feel safe while using your app</li>
-                      <li>Protect your user against phishing </li>
-                      <li>Join the community of verified uPort users</li>
-                    </UnorderedList>
-                  </Card.Content>
-                  : <Card.Content>
-                    <h4>Get uPort Verification Badge</h4>
-                    <Icon src={cog} />
-                    <p>
-                      If you want to build trust and verify your domain,
-                      please re-register and add your project’s url
-                    </p>
-                  </Card.Content>}
-                <Card.Footer>
-                  {!appDetails.appURL || <CTAButton onClick={this.showVerificationModal}>
-                    Learn How to Get the Badge
-                  </CTAButton>}
-                </Card.Footer>
-              </Card>
-            : null}
           </Container>
         </Body>
       </Section>
-      <VerificationModal
-        appDetails={appDetails}
-        show={verificationModal}
-        onClose={this.hideVerificationModal}
-      >
-        <p>
-          To associate your domain with your App Identity just upload the
-          following document to {" "}
-          <strong>
-            {`https://${appDetails.appURL}/.well-known/did.json`}
-          </strong>
-        </p>
-        <CodeContainer>
-          <CopyButton onCopy={this.handleCopy(didDoc(appDetails), 'DID Doc')}>
-            Copy
-          </CopyButton>
-          <Pre>
-            <Code className='language-javascript'>
-              {didDoc(appDetails)}
-            </Code>
-          </Pre>
-        </CodeContainer>
-      </VerificationModal>
       <SendVerificationModal
         show={claim && sendVerificationModal}
         onClose={this.hideUportVerificationModal}
