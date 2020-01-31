@@ -29,7 +29,7 @@ class Navigation extends React.Component {
           > About </StyledLink>
           <StyledLink
             className={`w-nav-link nav-link menu-item ${activeCategory !== 'overview' ? 'active' : ''}`}
-            to='/index.html#platform'
+            to='/#platform'
             activeClassName='active'
             onClick={this.track('Platform Clicked')}
           > Platform </StyledLink>
@@ -60,7 +60,7 @@ class Navigation extends React.Component {
             > About </StyledLink>
             <StyledLink
               className={`w-nav-link nav-link menu-item ${activeCategory !== 'overview' ? 'active' : ''}`}
-              to='/index.html#platform'
+              to='/#platform'
               activeClassName='active'
               onClick={this.track('Platform Clicked', { mobile: true })}
             > Platform </StyledLink>
